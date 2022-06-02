@@ -9,6 +9,7 @@
 import React from 'react';
 import type {Node} from 'react';
 import {
+  Button,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -25,32 +26,9 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
-
-const Section = ({children, title}): Node => {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-};
+import {ApiPromise, WsProvider} from '@polkadot/api';
+import ValidatorSelector from './ValidatorSelector';
+import {Keyring} from '@polkadot/api';
 
 const App: () => Node = () => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -59,32 +37,50 @@ const App: () => Node = () => {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
+  const checkValidtor = async () => {
+    // Create a keyring instance
+    debugger;
+
+    const keyring = new Keyring({type: ''});
+debugger;
+    // Some mnemonic phrase
+    const PHASE1 = '';
+
+    // Add an account, straight mnemonic
+    const newPair = keyring.addFromUri(PHASE1);
+
+    // (Advanced) add an account with a derivation path (hard & soft)
+    // const  alice = keyring.addFromUri(`${PHRASE}//hard-derived/soft-derived`);
+
+    try {
+      const api = await ApiPromise.create({
+        provider: new WsProvider('provider url'),
+      });
+      console.log(`${api}`);
+      const selector = new ValidatorSelector(api);
+      console.log(`${api}`);
+
+      const fata = await selector.getUserValidatorsMeetCriteria(
+        newPair.address,
+      );
+      console.log(`${api}`);
+    } catch (error) {
+      const yerro = error;
+      console.log(`${error}`);
+    }
+  };
+
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.js</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
+        <Button
+          onPress={checkValidtor}
+          title="Test mnemonic"
+          color="#841584"
+        />
       </ScrollView>
     </SafeAreaView>
   );
